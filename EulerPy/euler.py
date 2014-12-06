@@ -13,6 +13,8 @@ from EulerPy.problem import Problem
 from EulerPy.utils import clock, format_time, problem_glob, rename_file
 
 
+dataDir = os.path.join(os.path.dirname(__file__), 'data')
+
 # --cheat / -c
 def cheat(p):
     """View the answer to a problem."""
@@ -31,7 +33,7 @@ def cheat(p):
 # --generate / -g
 def generate(p, prompt_default=True):
     """Generates Python file for a problem."""
-    language = 'python'
+    template_name = 'python'
 
     msg = "Generate file for problem %i?" % p.num
     click.confirm(msg, default=prompt_default, abort=True)
@@ -55,12 +57,11 @@ $problem_text\"\"\"
 
 
 """
+    template_file = os.path.join(dataDir, 'templates', template_name)
 
-    path = os.path.join(os.environ['HOME'], '.eulerpy', language)
-    if os.path.isfile(path):
-        with open(path) as f:
+    if os.path.isfile(template_file):
+        with open(template_file) as f:
             template_string = f.read()
-
     else:
         template_string = default_template_string
     
