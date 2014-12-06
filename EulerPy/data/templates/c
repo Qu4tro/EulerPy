@@ -1,0 +1,22 @@
+#include <stdio.h>
+
+/*
+Project Euler Problem $problem
+=======================
+
+$problem_text
+*/
+
+int problem$problem()
+{
+    return 0;
+}
+
+int main()
+{
+    printf("%d\n", problem$problem());
+    return 0;
+}
+
+
+
