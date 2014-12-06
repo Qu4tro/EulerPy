@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import string
 from collections import OrderedDict
 
 import click
@@ -21,10 +22,16 @@ def cheat(p):
     click.echo("The answer to problem %i is {0}.".format(solution) % p.num)
 
 
+    if os.path.isfile(filename):
+        click.secho('"{0}" already exists. Overwrite?'.format(filename), fg='red', nl=False)
+        click.confirm('', abort=True)
+
+    
+
 # --generate / -g
 def generate(p, prompt_default=True):
     """Generates Python file for a problem."""
-    problem_text = p.text
+    language = 'python'
 
     msg = "Generate file for problem %i?" % p.num
     click.confirm(msg, default=prompt_default, abort=True)
@@ -37,15 +44,31 @@ def generate(p, prompt_default=True):
     else:
         filename = p.filename
 
-    header = 'Project Euler Problem %i' % p.num
-    divider = '=' * len(header)
+        keys = {'problem_text': p.text,
+                'problem'     : p.num}
+
+    default_template_string = """\"\"\"
+Project Euler Problem $problem
+=======================
+
+$problem_text\"\"\"
+
+
+"""
+
+    path = os.path.join(os.environ['HOME'], '.eulerpy', language)
+    if os.path.isfile(path):
+        with open(path) as f:
+            template_string = f.read()
+
+    else:
+        template_string = default_template_string
+    
+
+    template = string.Template(template_string)
 
     with open(filename, 'w') as file:
-        file.write('"""\n')
-        file.write(header + '\n')
-        file.write(divider + '\n\n')
-        file.write(problem_text)
-        file.write('"""\n\n\n')
+        file.write(template.substitute(**keys))
 
     click.secho('Successfully created "{0}".'.format(filename), fg='green')
 
